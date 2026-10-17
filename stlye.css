@@ -987,13 +987,13 @@ html, body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 120px;
-    height: 136px;
+    width: 108px;
+    height: 124px;
     background: #ffffff;
-    border-radius: 20px;
-    border: 3.5px solid #ffffff;
+    border-radius: 18px;
+    border: 3px solid #ffffff;
     box-sizing: border-box;
-    box-shadow: 0 0 18px rgba(255, 105, 180, 0.85), 0 0 38px rgba(255, 20, 147, 0.5), 0 10px 25px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 0 16px rgba(255, 105, 180, 0.8), 0 0 32px rgba(255, 20, 147, 0.45), 0 10px 22px rgba(0, 0, 0, 0.55);
     cursor: pointer;
     transition: transform 1.25s cubic-bezier(0.34, 1.35, 0.64, 1), opacity 0.6s ease, box-shadow 0.35s ease, z-index 0.2s ease;
     opacity: 0;
@@ -1071,12 +1071,12 @@ html, body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -54%) scale(0);
-    width: 128px;
-    height: 142px;
-    border-radius: 20px;
+    transform: translate(-50%, -50%) scale(0);
+    width: 118px;
+    height: 132px;
+    border-radius: 18px;
     background: #ffffff;
-    border: 3.5px solid #ffffff;
+    border: 3px solid #ffffff;
     box-shadow: 0 0 25px rgba(255, 105, 180, 0.9), 0 0 45px rgba(255, 20, 147, 0.6), 0 12px 30px rgba(0, 0, 0, 0.6);
     z-index: 30;
     opacity: 0;
@@ -1088,14 +1088,14 @@ html, body {
 
 .heart-center-card.show {
     opacity: 1;
-    transform: translate(-50%, -54%) scale(1);
+    transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
     animation: centerCardBreath 3.5s ease-in-out infinite 0.9s;
 }
 
 @keyframes centerCardBreath {
-    0%, 100% { transform: translate(-50%, -54%) scale(1); }
-    50%      { transform: translate(-50%, -54%) scale(1.05); }
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%      { transform: translate(-50%, -50%) scale(1.05); }
 }
 
 .heart-center-img-box {
@@ -1204,15 +1204,15 @@ html, body {
 /* Responsif Tablet & Mobile untuk Buku & Formasi Hati */
 @media (max-width: 900px) {
     .floating-photo-card {
-        width: 95px;
-        height: 108px;
-        border-radius: 16px;
-        border-width: 3px;
+        width: 82px;
+        height: 96px;
+        border-radius: 14px;
+        border-width: 2.5px;
     }
     .heart-center-card {
-        width: 105px;
-        height: 118px;
-        border-radius: 16px;
+        width: 90px;
+        height: 102px;
+        border-radius: 14px;
     }
     .dock-btn {
         font-size: 12px;
@@ -1241,19 +1241,19 @@ html, body {
         padding: 10px 10px 12px;
     }
     .floating-photo-card {
-        width: 68px;
-        height: 78px;
-        border-radius: 13px;
-        border-width: 2.5px;
+        width: 56px;
+        height: 66px;
+        border-radius: 11px;
+        border-width: 2px;
     }
     .floating-photo-card:hover,
     .floating-photo-card:active {
         transform: scale(1.22) rotate(0deg) !important;
     }
     .heart-center-card {
-        width: 74px;
-        height: 84px;
-        border-radius: 14px;
+        width: 64px;
+        height: 74px;
+        border-radius: 12px;
         border-width: 2.5px;
     }
     .heart-bottom-dock {
@@ -1311,4 +1311,394 @@ html, body {
 .letter-envelope.hidden,
 .letter-card.hidden {
     display: none !important;
+}
+
+/* Tombol Selesai Membaca Surat */
+.finish-letter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 105, 180, 0.7);
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.32) 0%, rgba(255, 20, 147, 0.45) 100%);
+    color: #FFE6F5;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4), inset 0 0 12px rgba(255, 230, 245, 0.2);
+    transition: all 0.3s ease;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    animation: btnSoftPulse 2.4s infinite ease-in-out;
+}
+
+@keyframes btnSoftPulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4), inset 0 0 12px rgba(255, 230, 245, 0.2);
+    }
+    50% {
+        box-shadow: 0 6px 30px rgba(255, 105, 180, 0.7), inset 0 0 18px rgba(255, 230, 245, 0.4);
+    }
+}
+
+.finish-letter-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.5) 0%, rgba(255, 20, 147, 0.65) 100%);
+    border-color: #FFE6F5;
+}
+
+/* ==========================================================================
+   WIDGET LIRIK LAGU MENGAMBANG (FLOATING SYNCED LYRICS)
+   ========================================================================== */
+.lyrics-widget {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.lyrics-widget.hidden {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.lyrics-card {
+    pointer-events: auto;
+    width: min(92vw, 620px);
+    height: min(74vh, 530px);
+    display: flex;
+    flex-direction: column;
+    background: rgba(18, 5, 20, 0.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1.5px solid rgba(255, 105, 180, 0.45);
+    border-radius: 26px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 105, 180, 0.3), inset 0 0 25px rgba(255, 105, 180, 0.1);
+    padding: 20px 22px 18px;
+    color: #FFE6F5;
+    animation: lyricsCardPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes lyricsCardPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Header Musik */
+.lyrics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 105, 180, 0.22);
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.lyrics-music-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Vinyl Disc Berputar */
+.vinyl-disc {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #2a0b25 20%, #110311 80%);
+    border: 2px solid rgba(255, 105, 180, 0.6);
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.4);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: vinylSpin 7s linear infinite;
+    flex-shrink: 0;
+}
+
+.vinyl-center {
+    font-size: 14px;
+    z-index: 2;
+}
+
+@keyframes vinylSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.lyrics-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.lyrics-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lyrics-title {
+    font-family: 'Orbitron', 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+}
+
+.lyrics-badge {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.35), rgba(255, 20, 147, 0.5));
+    border: 1px solid rgba(255, 105, 180, 0.6);
+    color: #FFE6F5;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+}
+
+.lyrics-artist-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lyrics-artist {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12.5px;
+    color: rgba(255, 182, 193, 0.85);
+}
+
+/* Sound Wave Bars */
+.lyrics-sound-wave {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 12px;
+}
+
+.lyrics-sound-wave span {
+    width: 2.5px;
+    background: #FF69B4;
+    border-radius: 2px;
+    animation: soundWave 1.2s infinite ease-in-out;
+}
+
+.lyrics-sound-wave span:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.lyrics-sound-wave span:nth-child(2) { height: 90%; animation-delay: 0.3s; }
+.lyrics-sound-wave span:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+.lyrics-sound-wave span:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+
+@keyframes soundWave {
+    0%, 100% { height: 25%; }
+    50% { height: 100%; }
+}
+
+.lyrics-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lyrics-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 105, 180, 0.4);
+    background: rgba(40, 12, 38, 0.7);
+    color: #FFE6F5;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.lyrics-action-btn:hover {
+    background: rgba(255, 105, 180, 0.3);
+    border-color: rgba(255, 105, 180, 0.9);
+    transform: scale(1.08);
+}
+
+/* Area Scroll Lirik */
+.lyrics-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    padding: 10px 8px;
+    margin: 4px 0 10px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.lyrics-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.lyrics-scroll-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 105, 180, 0.4);
+    border-radius: 4px;
+}
+
+.lyrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 24px 0 60px;
+}
+
+/* Item Lirik */
+.lyric-item {
+    padding: 10px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lyric-item:hover {
+    background: rgba(255, 105, 180, 0.08);
+}
+
+.lyric-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15.5px;
+    font-weight: 500;
+    color: rgba(255, 230, 245, 0.4);
+    line-height: 1.45;
+    transition: all 0.35s ease;
+}
+
+.lyric-trans {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255, 182, 193, 0.28);
+    margin-top: 3px;
+    transition: all 0.35s ease;
+}
+
+/* State Aktif (Saat Lagu Sedang Menyanyikan Baris Tersebut) */
+.lyric-item.active {
+    background: linear-gradient(90deg, rgba(255, 105, 180, 0.22) 0%, rgba(255, 20, 147, 0.1) 100%);
+    border-left: 3.5px solid #FF69B4;
+    padding-left: 18px;
+    transform: translateX(4px) scale(1.02);
+    box-shadow: 0 4px 18px rgba(255, 105, 180, 0.15);
+}
+
+.lyric-item.active .lyric-text {
+    font-size: 18.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-shadow: 0 0 16px rgba(255, 105, 180, 0.85), 0 0 28px rgba(255, 20, 147, 0.5);
+}
+
+.lyric-item.active .lyric-trans {
+    font-size: 13px;
+    color: #FFE6F5;
+    text-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+}
+
+/* Footer & Progress Bar */
+.lyrics-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 105, 180, 0.22);
+    flex-shrink: 0;
+}
+
+.lyrics-progress-container {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.2s ease;
+}
+
+.lyrics-progress-container:hover {
+    height: 7px;
+}
+
+.lyrics-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #FF69B4, #FFE6F5);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+    transition: width 0.15s linear;
+}
+
+.lyrics-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 230, 245, 0.55);
+}
+
+.lyrics-hint {
+    font-size: 10.5px;
+    color: rgba(255, 105, 180, 0.8);
+    text-align: center;
+}
+
+/* Responsif Mobile untuk Lirik */
+@media (max-width: 520px) {
+    .lyrics-card {
+        width: 94vw;
+        height: 72vh;
+        padding: 16px 14px 14px;
+        border-radius: 20px;
+    }
+    .lyrics-title {
+        font-size: 13.5px;
+    }
+    .vinyl-disc {
+        width: 40px;
+        height: 40px;
+    }
+    .lyric-item.active .lyric-text {
+        font-size: 16.5px;
+    }
+    .lyric-text {
+        font-size: 14px;
+    }
+    .lyrics-hint {
+        display: none;
+    }
 }

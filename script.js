@@ -728,7 +728,7 @@ function explodeHeartIntoFireworks() {
   // Fade out label setelah kembang api mulai mereda
   setTimeout(() => {
     const fadeLabel = setInterval(() => {
-      labelAlpha -= 0.015;
+      labelAlpha -= 0.005;
       if (labelAlpha <= 0) {
         labelAlpha = 0;
         clearInterval(fadeLabel);
@@ -917,28 +917,24 @@ function handleResize() {
   }
 
   // Perbarui posisi formasi kartu hati saat ukuran layar berubah
-  if (heartFormed && heartStage && !heartStage.classList.contains("hidden") && heartPhotosContainer) {
-    const isMobile = w < 520;
-    const isTablet = w >= 520 && w < 900;
-    const cardW = isMobile ? 68 : isTablet ? 95 : 120;
-    const cardH = isMobile ? 78 : isTablet ? 108 : 136;
-    const availW = Math.min(w * 0.9, 880);
-    const availH = Math.min(h * 0.86, 680);
-    const scaleX = (availW - cardW * 0.8) / 32;
-    const scaleY = (availH - cardH * 0.9) / 34;
-    const scale = Math.max(7, Math.min(scaleX, scaleY));
-
-    const dockedCards = heartPhotosContainer.querySelectorAll(".floating-photo-card.docked");
-    dockedCards.forEach((card, i) => {
-      const t = (2 * Math.PI * i) / dockedCards.length;
-      const sinT = Math.sin(t);
-      const hx = 16 * Math.pow(sinT, 3);
-      const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-      const targetX = Math.round(hx * scale);
-      const targetY = Math.round((hy + 1.2) * scale);
-      const rot = Math.max(-28, Math.min(28, Math.round((hx / 16) * 24)));
-      card.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) rotate(${rot}deg) scale(1)`;
-    });
+  if (
+    heartFormed &&
+    heartStage &&
+    !heartStage.classList.contains("hidden") &&
+    heartPhotosContainer
+  ) {
+    const dockedCards = heartPhotosContainer.querySelectorAll(
+      ".floating-photo-card.docked",
+    );
+    if (dockedCards.length > 0) {
+      const { points } = computeHeartFormationLayout(dockedCards.length, w, h);
+      dockedCards.forEach((card, i) => {
+        if (points[i]) {
+          const { targetX, targetY, rot } = points[i];
+          card.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) rotate(${rot}deg) scale(1)`;
+        }
+      });
+    }
   }
 }
 
@@ -994,25 +990,45 @@ if (soundBtn) {
 
 // --- Mulai Animasi Ucapan ---
 const WORD_DURATION = 4000; // Durasi per kata teks ucapan agar tenang & jelas terbaca
-const birthdayWords = ["Happy", "Birthday", "To You", "Sofi"];
+const birthdayWords = [
+  "Happy",
+  "Birthday",
+  "To",
+  "You",
+  "Tegar",
+  "Utomo",
+  "yang ke",
+  "24 tahun",
+];
 
 function startCelebration() {
   resetMatrixToLetters();
   currentPhase = "words";
   animRunning = true;
   bgMusicStarted = false;
+  letterHasBeenOpened = false;
+  lyricsUnlocked = false;
 
-  // Sembunyikan galeri & surat jika sebelumnya terbuka
-  if (typeof closeMemoryGallery === "function") {
-    closeMemoryGallery();
+  // Sembunyikan galeri, surat, dan lirik saat animasi baru dimulai
+  if (galleryModal) {
+    galleryModal.classList.add("hidden");
+    galleryModal.setAttribute("aria-hidden", "true");
   }
-  if (typeof closeBirthdayLetter === "function") {
-    closeBirthdayLetter();
+  if (letterModal) {
+    letterModal.classList.add("hidden");
+    letterModal.setAttribute("aria-hidden", "true");
   }
+  if (lyricsWidget) {
+    lyricsWidget.classList.add("hidden");
+    lyricsWidget.setAttribute("aria-hidden", "true");
+  }
+
   const reopenGallery = document.getElementById("reopenGalleryBtn");
   if (reopenGallery) reopenGallery.classList.add("hidden");
   const reopenLetter = document.getElementById("reopenLetterBtn");
   if (reopenLetter) reopenLetter.classList.add("hidden");
+  const reopenLyrics = document.getElementById("reopenLyricsBtn");
+  if (reopenLyrics) reopenLyrics.classList.add("hidden");
 
   // Putar lagu.mp3 secara langsung
   playBackgroundMusic();
@@ -1043,8 +1059,8 @@ function showWordsSequence(words) {
     morphTo(word, false, isFirstWord);
     wordIndex++;
 
-    // Kata pertama turun perlahan (~1.5 detik), berikan durasi 3200ms agar kata "Happy" dapat dinikmati & terbaca jelas
-    const duration = isFirstWord ? 3200 : WORD_DURATION;
+    // Kata pertama turun perlahan (~1.5 detik), berikan durasi 4800ms agar kata "Happy" dapat dinikmati & terbaca jelas
+    const duration = isFirstWord ? 4800 : WORD_DURATION;
     setTimeout(showNextWord, duration);
   }
 
@@ -1084,22 +1100,46 @@ if (startOverlay) {
 // Daftar foto kenangan dan teks keterangannya (mudah diedit & ditambah dinamis)
 const memoriesData = [
   {
-    src: "assets/memory1.jpg",
-    caption: "Senja terindah saat bersamamu 🌅",
-    date: "Momen 1 dari 3",
-    quote: "Setiap senja selalu mengingatkanku pada hangatnya senyum dan tatap matamu...",
+    src: "assets/memory1.jpeg",
+    caption: "Senyum manis yang selalu menghangatkan hati 🌅✨",
+    date: "Momen 1 dari 6",
+    quote:
+      "Setiap tatap matamu selalu membawa ketenangan dan bahagia yang tak tergantikan...",
   },
   {
-    src: "assets/memory2.jpg",
+    src: "assets/memory2.jpeg",
     caption: "Momen manis yang selalu kurindukan 🍰🌸",
-    date: "Momen 2 dari 3",
-    quote: "Tertawa lepas bersamamu adalah obat terbaik di setiap hariku...",
+    date: "Momen 2 dari 6",
+    quote:
+      "Tertawa lepas bersamamu adalah bagian terindah di setiap hariku...",
   },
   {
-    src: "assets/memory3.jpg",
+    src: "assets/memory3.jpeg",
+    caption: "Langkah dan cerita kita bersama 🌿💫",
+    date: "Momen 3 dari 6",
+    quote:
+      "Menemani setiap langkahmu adalah anugerah terindah yang selalu kusyukuri...",
+  },
+  {
+    src: "assets/memory4.jpeg",
     caption: "Malam bertabur bintang & senyumanmu 🎆✨",
-    date: "Momen 3 dari 3",
-    quote: "Di bawah langit malam, doa terbaikku selalu terucap untuk kebahagiaanmu...",
+    date: "Momen 4 dari 6",
+    quote:
+      "Di bawah langit malam, doa terbaikku selalu terucap untuk kebahagiaanmu...",
+  },
+  {
+    src: "assets/memory5.jpeg",
+    caption: "Kebersamaan yang penuh warna & tawa 💖🌷",
+    date: "Momen 5 dari 6",
+    quote:
+      "Sederhana saat bersamamu selalu terasa begitu istimewa dan bermakna...",
+  },
+  {
+    src: "assets/memory6.jpeg",
+    caption: "Doa tulus untuk usiamu yang baru 🎂🎉",
+    date: "Momen 6 dari 6",
+    quote:
+      "Semoga di usia ke-24 ini, setiap impian dan harapanmu terwujud satu per satu...",
   },
 ];
 
@@ -1303,7 +1343,8 @@ function updateBookControls() {
     if (bookNextBtnText) bookNextBtnText.textContent = "Buka Buku";
     bookPrevBtn.disabled = true;
     bookNextBtn.classList.remove("highlight-next");
-    if (bookHint) bookHint.textContent = "💡 Ketuk cover buku atau tombol untuk membuka";
+    if (bookHint)
+      bookHint.textContent = "💡 Ketuk cover buku atau tombol untuk membuka";
   } else if (currentBookLeafIndex < totalBookLeaves) {
     bookPageIndicator.textContent = `Halaman ${currentBookLeafIndex} / ${memoriesData.length}`;
     if (bookNextBtnText) {
@@ -1315,14 +1356,18 @@ function updateBookControls() {
     }
     bookPrevBtn.disabled = false;
     bookNextBtn.classList.remove("highlight-next");
-    if (bookHint) bookHint.textContent = "💡 Buka setiap lembaran untuk mengenang semua momen";
+    if (bookHint)
+      bookHint.textContent =
+        "💡 Buka setiap lembaran untuk mengenang semua momen";
   } else {
     // Semua lembaran ke-n telah selesai dibuka!
     bookPageIndicator.textContent = `Selesai (${memoriesData.length}/${memoriesData.length})`;
     if (bookNextBtnText) bookNextBtnText.textContent = "✨ Satukan di Hati";
     bookPrevBtn.disabled = false;
     bookNextBtn.classList.add("highlight-next");
-    if (bookHint) bookHint.textContent = "🎉 Semua kenangan terbuka! Ketuk tombol untuk menyusun hati ✨";
+    if (bookHint)
+      bookHint.textContent =
+        "🎉 Semua kenangan terbuka! Ketuk tombol untuk menyusun hati ✨";
   }
 }
 
@@ -1360,6 +1405,82 @@ function flipBookTo(targetIndex) {
   }
 }
 
+// === ALGORITMA PERHITUNGAN FORMASI HATI EQUIDISTANT (BENTUK HATI SEMPURNA) ===
+function computeHeartFormationLayout(count, screenW, screenH) {
+  const isMobile = screenW < 520;
+  const isTablet = screenW >= 520 && screenW < 900;
+
+  // Ukuran kartu proporsional agar tidak saling menumpuk dan menutupi bentuk hati
+  const cardW = isMobile ? 56 : isTablet ? 82 : 108;
+  const cardH = isMobile ? 66 : isTablet ? 96 : 124;
+
+  // Batas ruang layar yang aman
+  const availW = Math.min(screenW * 0.92, isMobile ? 360 : isTablet ? 650 : 860);
+  const availH = Math.min(screenH * 0.74, isMobile ? 480 : isTablet ? 560 : 680);
+
+  const scaleX = (availW - cardW) / 32;
+  const scaleY = (availH - cardH) / 30;
+  const scale = Math.max(7, Math.min(scaleX, scaleY));
+
+  // Kurva parametrik hati dengan jarak keliling sama rata (Arc-Length Parameterization)
+  const N = 1000;
+  const curve = [];
+  for (let i = 0; i <= N; i++) {
+    const t = (2 * Math.PI * i) / N;
+    const sinT = Math.sin(t);
+    const x = 16 * Math.pow(sinT, 3);
+    const y = -(
+      13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t)
+    );
+    // Dinormalkan agar pusat vertikal kurva tepat di tengah layar (0, 0)
+    curve.push({ x, y: y - 2.55 });
+  }
+
+  const lengths = [0];
+  for (let i = 1; i < curve.length; i++) {
+    const dx = curve[i].x - curve[i - 1].x;
+    const dy = curve[i].y - curve[i - 1].y;
+    lengths.push(lengths[i - 1] + Math.hypot(dx, dy));
+  }
+  const totalLen = lengths[lengths.length - 1];
+
+  const points = [];
+  for (let k = 0; k < count; k++) {
+    const targetDist = (k / count) * totalLen;
+    for (let j = 0; j < lengths.length - 1; j++) {
+      if (lengths[j] <= targetDist && targetDist <= lengths[j + 1]) {
+        const span = lengths[j + 1] - lengths[j];
+        const frac = span > 0 ? (targetDist - lengths[j]) / span : 0;
+        const hx = curve[j].x + frac * (curve[j + 1].x - curve[j].x);
+        const hy = curve[j].y + frac * (curve[j + 1].y - curve[j].y);
+
+        // Vektor kontur untuk rotasi sudut kartu yang selaras dengan bentuk lekukan hati
+        const jNext = (j + 25) % N;
+        const jPrev = (j - 25 + N) % N;
+        const tdx = curve[jNext].x - curve[jPrev].x;
+        const tdy = curve[jNext].y - curve[jPrev].y;
+
+        let rot = (Math.atan2(tdy, tdx) * 180) / Math.PI;
+        if (rot > 90) rot -= 180;
+        if (rot < -90) rot += 180;
+        rot = Math.max(-42, Math.min(42, Math.round(rot)));
+
+        points.push({
+          targetX: Math.round(hx * scale),
+          targetY: Math.round(hy * scale),
+          rot: rot,
+        });
+        break;
+      }
+    }
+  }
+
+  return { points, scale, cardW, cardH };
+}
+
 // === FORMASI FOTO MELAYANG MENYUSUN BENTUK HATI (FULLSCREEN PERSIS REFERENSI) ===
 function startFloatingHeartFormation() {
   if (heartFormed) return;
@@ -1376,23 +1497,10 @@ function startFloatingHeartFormation() {
 
   const screenW = window.innerWidth;
   const screenH = window.innerHeight;
-  const isMobile = screenW < 520;
-  const isTablet = screenW >= 520 && screenW < 900;
 
-  // Ukuran kartu responsif
-  const cardW = isMobile ? 68 : isTablet ? 95 : 120;
-  const cardH = isMobile ? 78 : isTablet ? 108 : 136;
-
-  // Area layar yang dipakai agar pas dan proporsional seperti referensi
-  const availW = Math.min(screenW * 0.9, 880);
-  const availH = Math.min(screenH * 0.86, 680);
-
-  const scaleX = (availW - cardW * 0.8) / 32;
-  const scaleY = (availH - cardH * 0.9) / 34;
-  const scale = Math.max(7, Math.min(scaleX, scaleY));
-
-  // Tepat 20 kartu sekeliling hati untuk formasi padat & sempurna
-  const totalCount = 20;
+  // Gunakan 16 kartu agar tiap foto tersusun anggun dengan bentuk lekukan hati yang tajam & jelas
+  const totalCount = 16;
+  const { points } = computeHeartFormationLayout(totalCount, screenW, screenH);
   const cards = [];
 
   // SVG Stiker Tangan Memegang Hati (Persis seperti referensi madeforanita.vercel.app)
@@ -1404,30 +1512,22 @@ function startFloatingHeartFormation() {
     </svg>
   `;
 
-  // Stiker tangan di beberapa kartu (indeks 3, 8, 13, 17) seperti pada foto referensi
-  const stickerIndices = new Set([3, 8, 13, 17]);
+  // Stiker tangan di kartu sayap luar (indeks 3 dan 13)
+  const stickerIndices = new Set([3, 13]);
 
   for (let i = 0; i < totalCount; i++) {
-    // Koordinat target di kurva hati
-    const t = (2 * Math.PI * i) / totalCount;
-    const sinT = Math.sin(t);
-    const hx = 16 * Math.pow(sinT, 3);
-    const hy = -(
-      13 * Math.cos(t) -
-      5 * Math.cos(2 * t) -
-      2 * Math.cos(3 * t) -
-      Math.cos(4 * t)
-    );
-
-    const targetX = Math.round(hx * scale);
-    const targetY = Math.round((hy + 1.2) * scale);
-    const rot = Math.max(-28, Math.min(28, Math.round((hx / 16) * 24)));
+    const { targetX, targetY, rot } = points[i];
 
     // Posisi awal melayang acak menyebar di layar (floating freely across viewport)
-    const floatAngle = (i / totalCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-    const floatDist = (Math.min(screenW, screenH) * 0.32) + (Math.random() * 80);
-    const floatX = Math.round(Math.cos(floatAngle) * floatDist + (Math.random() - 0.5) * 60);
-    const floatY = Math.round(Math.sin(floatAngle) * floatDist * 0.85 + (Math.random() - 0.5) * 50);
+    const floatAngle =
+      (i / totalCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    const floatDist = Math.min(screenW, screenH) * 0.32 + Math.random() * 80;
+    const floatX = Math.round(
+      Math.cos(floatAngle) * floatDist + (Math.random() - 0.5) * 60,
+    );
+    const floatY = Math.round(
+      Math.sin(floatAngle) * floatDist * 0.85 + (Math.random() - 0.5) * 50,
+    );
     const floatRot = Math.round((Math.random() - 0.5) * 35);
 
     const memoryItem = memoriesData[i % memoriesData.length];
@@ -1472,11 +1572,14 @@ function startFloatingHeartFormation() {
   const DOCK_INTERVAL = 170; // 170ms jeda beruntun antar foto
 
   cards.forEach(({ card, targetX, targetY, rot, i }) => {
-    setTimeout(() => {
-      card.classList.add("docked");
-      card.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) rotate(${rot}deg) scale(1)`;
-      playSynthesizedSound("chime");
-    }, DOCK_START_DELAY + i * DOCK_INTERVAL);
+    setTimeout(
+      () => {
+        card.classList.add("docked");
+        card.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) rotate(${rot}deg) scale(1)`;
+        playSynthesizedSound("chime");
+      },
+      DOCK_START_DELAY + i * DOCK_INTERVAL,
+    );
   });
 
   // Tahap 3: Setelah semua 20 foto selesai berbaris, munculkan kartu foto di tengah & tombol aksi
@@ -1514,6 +1617,10 @@ function resetBookToStart() {
 function showMemoryGallery() {
   if (!galleryModal) return;
 
+  if (typeof hideLyricsWidget === "function") {
+    hideLyricsWidget();
+  }
+
   buildBookLeaves();
   resetBookToStart();
 
@@ -1530,8 +1637,13 @@ function closeMemoryGallery() {
     galleryModal.classList.add("hidden");
     galleryModal.setAttribute("aria-hidden", "true");
   }
-  if (reopenGalleryBtn) {
+  if (letterHasBeenOpened && reopenGalleryBtn) {
     reopenGalleryBtn.classList.remove("hidden");
+  }
+  if (letterHasBeenOpened && (!letterModal || letterModal.classList.contains("hidden"))) {
+    if (typeof showLyricsWidget === "function") {
+      showLyricsWidget();
+    }
   }
 }
 
@@ -1590,11 +1702,14 @@ const reopenLetterBtn = document.getElementById("reopenLetterBtn");
 function showBirthdayLetter() {
   if (!letterModal) return;
 
-  // Sesuaikan nama penerima surat dengan kata terakhir di birthdayWords (misal: "Sofi")
+  if (typeof hideLyricsWidget === "function") {
+    hideLyricsWidget();
+  }
+
+  // Sesuaikan nama penerima surat
   const nameEl = document.querySelector(".letter-name");
-  if (nameEl && birthdayWords.length > 0) {
-    const lastName = birthdayWords[birthdayWords.length - 1];
-    nameEl.textContent = lastName;
+  if (nameEl) {
+    nameEl.textContent = "Tegar Utomo";
   }
 
   // Tampilkan amplop terlebih dahulu
@@ -1606,8 +1721,13 @@ function showBirthdayLetter() {
   letterModal.setAttribute("aria-hidden", "false");
 }
 
+let letterHasBeenOpened = false;
+
 // Fungsi membuka isi surat dari amplop
 function openBirthdayLetter() {
+  letterHasBeenOpened = true;
+  lyricsUnlocked = true;
+
   if (letterEnvelope) letterEnvelope.classList.add("hidden");
   if (letterCard) {
     letterCard.classList.remove("hidden");
@@ -1621,12 +1741,23 @@ function closeBirthdayLetter() {
     letterModal.classList.add("hidden");
     letterModal.setAttribute("aria-hidden", "true");
   }
-  // Munculkan tombol floating di kanan bawah agar surat & galeri dapat dibuka kembali kapan saja
-  if (reopenLetterBtn) {
-    reopenLetterBtn.classList.remove("hidden");
-  }
-  if (reopenGalleryBtn) {
-    reopenGalleryBtn.classList.remove("hidden");
+
+  // Tombol floating & widget lirik HANYA aktif jika animasi surat sudah dibuka oleh pengguna
+  if (letterHasBeenOpened) {
+    if (reopenLetterBtn) {
+      reopenLetterBtn.classList.remove("hidden");
+    }
+    if (reopenGalleryBtn) {
+      reopenGalleryBtn.classList.remove("hidden");
+    }
+    if (reopenLyricsBtn) {
+      reopenLyricsBtn.classList.remove("hidden");
+    }
+
+    // Tampilkan widget lirik lagu setelah surat selesai dibuka/dibaca
+    if (typeof showLyricsWidget === "function") {
+      showLyricsWidget();
+    }
   }
 }
 
@@ -1655,6 +1786,9 @@ if (letterBackdrop) {
 if (reopenLetterBtn) {
   reopenLetterBtn.addEventListener("click", () => {
     closeMemoryGallery();
+    if (typeof hideLyricsWidget === "function") {
+      hideLyricsWidget();
+    }
     if (letterEnvelope) letterEnvelope.classList.add("hidden");
     if (letterCard) {
       letterCard.classList.remove("hidden");
@@ -1668,6 +1802,239 @@ if (reopenLetterBtn) {
   });
 }
 
+// ==========================================================================
+// SISTEM LIRIK LAGU SINKRON (PAUL PARTOHAP - THANK YOU 4 LOVIN' ME - VERSI PEREMPUAN)
+// ==========================================================================
+
+const lyricsData = [
+  { time: 0.0, text: "✨ (Melodi Intro - Paul Partohap) ✨", trans: "Thank You 4 Lovin' Me (Female Version)" },
+  { time: 24.0, text: "Wish you could always tell me", trans: "Kuharap kamu selalu memberitahuku" },
+  { time: 30.3, text: "How to make you happy", trans: "Bagaimana cara membuatmu bahagia" },
+  { time: 34.7, text: "I just got no clue", trans: "Aku sungguh tak tahu" },
+  { time: 37.5, text: "Don't want you feel blue", trans: "Tak ingin membuatmu bersedih" },
+  { time: 40.7, text: "It's true...", trans: "Sungguh..." },
+  { time: 47.3, text: "I'm tryin' to be a better woman", trans: "Aku berusaha menjadi wanita yang lebih baik untukmu" },
+  { time: 53.3, text: "Doin' the best that I think I can", trans: "Melakukan yang terbaik sebisa yang kumampu" },
+  { time: 57.7, text: "Don't know where I'm goin'", trans: "Tak tahu ke mana langkahku berujung" },
+  { time: 60.6, text: "But in case you're wonderin'", trans: "Tapi jika kamu bertanya-tanya" },
+  { time: 63.7, text: "I'm on my way", trans: "Aku sedang dalam perjalanan menuju ke sana" },
+  { time: 69.2, text: "I know I'm not perfect", trans: "Aku tahu aku tidak sempurna" },
+  { time: 72.4, text: "But you still chose me", trans: "Tapi kamu tetap memilih diriku" },
+  { time: 74.7, text: "Boy, this is not an act", trans: "Kasih, ini sungguh bukan sandiwara" },
+  { time: 77.7, text: "Oh, I want to be the last for you, for you", trans: "Oh, aku ingin menjadi pelabuhan terakhir untukmu" },
+  { time: 92.3, text: "And often I keep thinking", trans: "Dan sering kali aku terus berpikir" },
+  { time: 95.5, text: "Am I worth waiting for?", trans: "Apakah aku pantas untuk kamu tunggu?" },
+  { time: 97.8, text: "But you keep motivating me", trans: "Tetapi kamu selalu menyemangatiku" },
+  { time: 101.6, text: "To be the best of me, of me, of me", trans: "Untuk menjadi versi terbaik dari diriku" },
+  { time: 114.0, text: "✨ (Melodi Solo Gitar yang Manis) ✨", trans: "Mengenang setiap senyum dan kehangatanmu..." },
+  { time: 134.4, text: "Tried to be a better woman", trans: "Berusaha menjadi wanita yang lebih baik" },
+  { time: 140.2, text: "Doin' the best of the things I can", trans: "Melakukan yang terbaik dari segala yang bisa kulakukan" },
+  { time: 144.6, text: "Don't know where I'm going", trans: "Tak tahu ke mana arah tujuanku" },
+  { time: 147.4, text: "But in case you're wonderin'", trans: "Namun jika kamu penasaran" },
+  { time: 150.6, text: "I'm on my way", trans: "Aku sedang melangkah menuju hatimu" },
+  { time: 156.1, text: "I know I'm not perfect", trans: "Aku tahu aku tidak sempurna" },
+  { time: 159.0, text: "But you still chose me", trans: "Tapi kamu tetap setia memilihku" },
+  { time: 161.4, text: "Boy, this is not an act", trans: "Kasih, ini sungguh tulus dari hatiku" },
+  { time: 164.6, text: "Oh, I want to be the last for you, for you", trans: "Oh, aku ingin menjadi yang terakhir untukmu" },
+  { time: 178.8, text: "And often I keep thinking", trans: "Dan sering kali aku merenung" },
+  { time: 182.3, text: "Am I worth waiting for?", trans: "Apakah aku layak untuk kamu nantikan?" },
+  { time: 184.6, text: "But you keep motivating me", trans: "Namun kamu selalu memotivasiku" },
+  { time: 188.3, text: "To be the best of me, of me, of me", trans: "Untuk terus menjadi yang terbaik untukmu" },
+  { time: 202.4, text: "I know it ain't easy", trans: "Aku tahu ini tidak mudah" },
+  { time: 208.2, text: "I know it ain't easy", trans: "Aku tahu semua ini tidak mudah bagimu" },
+  { time: 214.2, text: "But thank you...", trans: "Tapi terima kasih banyak..." },
+  { time: 217.4, text: "Thank you for lovin' me ❤️", trans: "Terima kasih telah mencintaiku setulus hatimu" }
+];
+
+const lyricsWidget = document.getElementById("lyricsWidget");
+const lyricsList = document.getElementById("lyricsList");
+const lyricsScrollArea = document.getElementById("lyricsScrollArea");
+const closeLyricsBtn = document.getElementById("closeLyricsBtn");
+const reopenLyricsBtn = document.getElementById("reopenLyricsBtn");
+const finishLetterBtn = document.getElementById("finishLetterBtn");
+const lyricsProgressBar = document.getElementById("lyricsProgressBar");
+const lyricsProgressFill = document.getElementById("lyricsProgressFill");
+const lyricsCurrentTimeEl = document.getElementById("lyricsCurrentTime");
+const lyricsDurationEl = document.getElementById("lyricsDuration");
+
+let lyricsInitialized = false;
+let currentLyricIndex = -1;
+let lyricsUnlocked = false;
+
+// Format detik ke mm:ss
+function formatTime(seconds) {
+  if (isNaN(seconds) || seconds < 0) return "00:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
+// Inisialisasi DOM list lirik
+function initLyricsDOM() {
+  if (!lyricsList || lyricsInitialized) return;
+  lyricsList.innerHTML = "";
+
+  lyricsData.forEach((item, index) => {
+    const el = document.createElement("div");
+    el.className = "lyric-item";
+    el.dataset.index = index;
+    el.dataset.time = item.time;
+
+    el.innerHTML = `
+      <div class="lyric-text">${item.text}</div>
+      <div class="lyric-trans">${item.trans}</div>
+    `;
+
+    // Klik pada baris lirik untuk lompat langsung ke audio bagian tersebut
+    el.addEventListener("click", () => {
+      if (bgMusicAudio) {
+        bgMusicAudio.currentTime = Math.max(0, item.time + 0.1);
+        if (bgMusicAudio.paused) bgMusicAudio.play().catch(() => {});
+        updateLyricsByTime(bgMusicAudio.currentTime, true);
+      }
+    });
+
+    lyricsList.appendChild(el);
+  });
+
+  lyricsInitialized = true;
+}
+
+// Update posisi lirik aktif berdasarkan currentTime audio
+function updateLyricsByTime(currentTime, forceScroll = false) {
+  if (!lyricsList) return;
+
+  // Cari baris lirik yang cocok
+  let activeIdx = -1;
+  for (let i = lyricsData.length - 1; i >= 0; i--) {
+    if (currentTime >= lyricsData[i].time - 0.25) {
+      activeIdx = i;
+      break;
+    }
+  }
+
+  // Update progress bar & time labels
+  if (bgMusicAudio && bgMusicAudio.duration) {
+    const dur = bgMusicAudio.duration;
+    const pct = Math.min(100, Math.max(0, (currentTime / dur) * 100));
+    if (lyricsProgressFill) lyricsProgressFill.style.width = `${pct}%`;
+    if (lyricsCurrentTimeEl) lyricsCurrentTimeEl.textContent = formatTime(currentTime);
+    if (lyricsDurationEl) lyricsDurationEl.textContent = formatTime(dur);
+  }
+
+  if (activeIdx !== currentLyricIndex || forceScroll) {
+    currentLyricIndex = activeIdx;
+    const items = lyricsList.querySelectorAll(".lyric-item");
+    items.forEach((item, idx) => {
+      if (idx === activeIdx) {
+        item.classList.add("active");
+        if (lyricsScrollArea) {
+          // Scroll halus agar baris aktif tepat berada di tengah area lirik
+          const itemTop = item.offsetTop;
+          const itemHeight = item.offsetHeight;
+          const containerHeight = lyricsScrollArea.clientHeight;
+          lyricsScrollArea.scrollTo({
+            top: itemTop - containerHeight / 2 + itemHeight / 2,
+            behavior: "smooth"
+          });
+        }
+      } else {
+        item.classList.remove("active");
+      }
+    });
+  }
+}
+
+// Buka widget lirik
+function showLyricsWidget() {
+  // Hanya boleh dibuka jika surat memang sudah dibuka oleh pengguna
+  if (!lyricsWidget || !letterHasBeenOpened) return;
+  initLyricsDOM();
+  lyricsUnlocked = true;
+
+  lyricsWidget.classList.remove("hidden");
+  lyricsWidget.setAttribute("aria-hidden", "false");
+
+  if (reopenLyricsBtn) {
+    reopenLyricsBtn.classList.remove("hidden");
+  }
+
+  if (bgMusicAudio) {
+    updateLyricsByTime(bgMusicAudio.currentTime, true);
+  }
+}
+
+// Sembunyikan widget lirik
+function hideLyricsWidget() {
+  if (!lyricsWidget) return;
+  lyricsWidget.classList.add("hidden");
+  lyricsWidget.setAttribute("aria-hidden", "true");
+
+  if (letterHasBeenOpened && reopenLyricsBtn) {
+    reopenLyricsBtn.classList.remove("hidden");
+  } else if (!letterHasBeenOpened && reopenLyricsBtn) {
+    reopenLyricsBtn.classList.add("hidden");
+  }
+}
+
+// Toggle widget lirik
+function toggleLyricsWidget() {
+  if (!lyricsWidget) return;
+  if (lyricsWidget.classList.contains("hidden")) {
+    showLyricsWidget();
+  } else {
+    hideLyricsWidget();
+  }
+}
+
+// Pasang event listener progress bar seek
+if (lyricsProgressBar) {
+  lyricsProgressBar.addEventListener("click", (e) => {
+    if (!bgMusicAudio || !bgMusicAudio.duration) return;
+    const rect = lyricsProgressBar.getBoundingClientRect();
+    const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    bgMusicAudio.currentTime = pos * bgMusicAudio.duration;
+    updateLyricsByTime(bgMusicAudio.currentTime, true);
+  });
+}
+
+// Event listener timeupdate audio
+if (bgMusicAudio) {
+  bgMusicAudio.addEventListener("timeupdate", () => {
+    if (lyricsWidget && !lyricsWidget.classList.contains("hidden")) {
+      updateLyricsByTime(bgMusicAudio.currentTime);
+    }
+  });
+
+  bgMusicAudio.addEventListener("loadedmetadata", () => {
+    if (lyricsDurationEl && bgMusicAudio.duration) {
+      lyricsDurationEl.textContent = formatTime(bgMusicAudio.duration);
+    }
+  });
+}
+
+// Event listener tombol tutup & toggle lirik
+if (closeLyricsBtn) {
+  closeLyricsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    hideLyricsWidget();
+  });
+}
+
+if (reopenLyricsBtn) {
+  reopenLyricsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleLyricsWidget();
+  });
+}
+
+if (finishLetterBtn) {
+  finishLetterBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeBirthdayLetter();
+  });
+}
+
 // Expose ke window agar bisa diakses jika diperlukan
 window.showMemoryGallery = showMemoryGallery;
 window.closeMemoryGallery = closeMemoryGallery;
@@ -1675,3 +2042,6 @@ window.startFloatingHeartFormation = startFloatingHeartFormation;
 window.showBirthdayLetter = showBirthdayLetter;
 window.openBirthdayLetter = openBirthdayLetter;
 window.closeBirthdayLetter = closeBirthdayLetter;
+window.showLyricsWidget = showLyricsWidget;
+window.hideLyricsWidget = hideLyricsWidget;
+window.toggleLyricsWidget = toggleLyricsWidget;

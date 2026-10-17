@@ -71,7 +71,7 @@
                 <div class="heart-center-card" id="heartCenterCard" title="Foto Teristimewa 💖">
                     <div class="heart-center-badge">💖</div>
                     <div class="heart-center-img-box">
-                        <img src="assets/memory1.jpg" alt="Foto Spesial" class="heart-center-img" id="heartCenterImg">
+                        <img src="assets/memory1.jpeg" alt="Foto Spesial" class="heart-center-img" id="heartCenterImg">
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@
                 <button id="closeLetterBtn" class="close-letter-btn" aria-label="Tutup Surat" title="Tutup">✕</button>
                 <div class="letter-decor-top">💖 ✨ 💖</div>
                 <div class="letter-header">
-                    <h2 class="letter-dear">Dear <span class="letter-name">Sofi</span>,</h2>
+                    <h2 class="letter-dear">Dear <span class="letter-name">Tegar Utomo</span>,</h2>
                 </div>
                 <div class="letter-body">
                     <p>Selamat ulang tahun! 🎉</p>
@@ -119,6 +119,58 @@
                 <div class="letter-footer">
                     <p class="letter-closing">Dengan tulus & penuh cinta,</p>
                     <p class="letter-signature">❤️</p>
+                    <button id="finishLetterBtn" class="finish-letter-btn" title="Selesai membaca dan nikmati lagu">
+                        <span>✨ Selesai Membaca & Nikmati Musik 🎵</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widget Lirik Lagu Mengambang (Floating Synced Lyrics) -->
+    <div id="lyricsWidget" class="lyrics-widget hidden" aria-hidden="true">
+        <div class="lyrics-card">
+            <!-- Header Musik -->
+            <div class="lyrics-header">
+                <div class="lyrics-music-info">
+                    <div class="vinyl-disc" title="Playing Thank You 4 Lovin' Me">
+                        <div class="vinyl-grooves"></div>
+                        <div class="vinyl-center">💖</div>
+                    </div>
+                    <div class="lyrics-meta">
+                        <div class="lyrics-title-row">
+                            <span class="lyrics-title">Thank You 4 Lovin' Me</span>
+                            <span class="lyrics-badge">Versi Perempuan 🌸</span>
+                        </div>
+                        <div class="lyrics-artist-row">
+                            <span class="lyrics-artist">Paul Partohap</span>
+                            <div class="lyrics-sound-wave">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lyrics-header-actions">
+                    <button id="closeLyricsBtn" class="lyrics-action-btn" aria-label="Tutup Lirik" title="Sembunyikan Lirik (Bisa dibuka lagi via tombol pojok)">✕</button>
+                </div>
+            </div>
+
+            <!-- Area Gulir Lirik -->
+            <div id="lyricsScrollArea" class="lyrics-scroll-area">
+                <div id="lyricsList" class="lyrics-list">
+                    <!-- Item lirik akan digenerate otomatis melalui JavaScript -->
+                </div>
+            </div>
+
+            <!-- Footer & Progress Bar -->
+            <div class="lyrics-footer">
+                <div class="lyrics-progress-container" id="lyricsProgressBar" title="Geser / Klik untuk memajukan lagu">
+                    <div class="lyrics-progress-fill" id="lyricsProgressFill"></div>
+                </div>
+                <div class="lyrics-footer-bottom">
+                    <span class="lyrics-time" id="lyricsCurrentTime">00:00</span>
+                    <span class="lyrics-hint">💡 Ketuk baris lirik untuk memutar bagian tersebut</span>
+                    <span class="lyrics-time" id="lyricsDuration">03:44</span>
                 </div>
             </div>
         </div>
@@ -133,6 +185,10 @@
         <button id="reopenLetterBtn" class="floating-btn hidden" aria-label="Buka Surat Ulang Tahun" title="Buka Surat">
             <span class="floating-btn-icon">💌</span>
             <span class="floating-btn-text">Surat</span>
+        </button>
+        <button id="reopenLyricsBtn" class="floating-btn hidden" aria-label="Buka Lirik Lagu" title="Buka Lirik Lagu">
+            <span class="floating-btn-icon">🎵</span>
+            <span class="floating-btn-text">Lirik</span>
         </button>
     </div>
 
