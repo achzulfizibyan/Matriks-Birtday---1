@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dense Matrix Rain Pink - Happy Birthday</title>
+    <link rel="stylesheet" href="stlye.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Layar Pembuka: Tap untuk Memulai (memastikan audio sinkron sempurna) -->
+    <div id="startOverlay" class="start-overlay">
+        <div class="start-overlay-content">
+            <div class="start-overlay-emoji">🎂</div>
+            <div class="start-overlay-title">Ada Kejutan Untukmu!</div>
+            <div class="start-overlay-tap">
+                <span class="tap-ring"></span>
+                <span class="tap-text">Ketuk di mana saja untuk mulai</span>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="matrixCanvas"></canvas>
+
+    <!-- Particle Canvas (di depan Matrix) -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Audio Musik Lagu (Background Music) -->
+    <audio id="bgMusic" src="assets/lagu.mp3" preload="auto" playsinline loop></audio>
+
+    <!-- Modal Galeri Memori: Animasi Buku Kenangan & Formasi Hati Melayang -->
+    <div id="galleryModal" class="gallery-modal hidden" aria-hidden="true">
+        <div class="gallery-backdrop" id="galleryBackdrop"></div>
+        <div class="gallery-container">
+            <!-- Header Galeri Dinamis -->
+            <div class="gallery-header" id="galleryHeader">
+                <span class="gallery-badge" id="galleryBadge">📖 Sweet Memories Album</span>
+                <h2 class="gallery-title" id="galleryTitle">Buku Kenangan Indah</h2>
+                <p class="gallery-subtitle" id="gallerySubtitle">Buka setiap lembaran untuk mengenang setiap tawa dan cerita kita ✨</p>
+            </div>
+
+            <!-- Stage 1: Buku Kenangan 3D (Animasi Membuka Buku) -->
+            <div class="book-stage" id="bookStage">
+                <div class="book-wrapper">
+                    <div class="book" id="bookElement">
+                        <!-- Halaman dinamis digenerate oleh script.js -->
+                    </div>
+                </div>
+
+                <!-- Kontrol Navigasi Buku -->
+                <div class="book-controls">
+                    <button id="bookPrevBtn" class="book-nav-btn prev" aria-label="Halaman Sebelumnya" title="Halaman Sebelumnya">❮</button>
+                    <div class="book-page-indicator" id="bookPageIndicator">Cover</div>
+                    <button id="bookNextBtn" class="book-nav-btn next" aria-label="Buka Halaman" title="Buka Halaman">
+                        <span id="bookNextBtnText">Buka Halaman</span> ❯
+                    </button>
+                </div>
+                <div class="book-hint" id="bookHint">💡 Ketuk lembaran buku atau tombol untuk membuka halaman</div>
+            </div>
+
+            <!-- Stage 2: Formasi Foto Melayang Menyusun Bentuk Hati (Fullscreen) -->
+            <div class="heart-formation-stage hidden" id="heartStage">
+                <div class="heart-photos-container" id="heartPhotosContainer">
+                    <!-- Foto-foto melayang disusun di sini oleh script.js -->
+                </div>
+
+                <!-- Kartu Inti di Tengah Bentuk Hati (Persis Foto Referensi) -->
+                <div class="heart-center-card" id="heartCenterCard" title="Foto Teristimewa 💖">
+                    <div class="heart-center-badge">💖</div>
+                    <div class="heart-center-img-box">
+                        <img src="assets/memory1.jpg" alt="Foto Spesial" class="heart-center-img" id="heartCenterImg">
+                    </div>
+                </div>
+
+                <!-- Floating Bottom Dock: Tombol Aksi Bersih & Elegan -->
+                <div class="heart-bottom-dock" id="heartBottomDock">
+                    <button id="reopenBookBtn" class="dock-btn secondary" title="Buka kembali buku kenangan">
+                        <span>📖 Buka Buku Lagi</span>
+                    </button>
+                    <button id="goToLetterBtn" class="dock-btn primary pulse-glow" title="Lanjut membaca surat ulang tahun">
+                        <span>💌 Lanjut Buka Surat Untukmu</span>
+                        <span class="btn-arrow">➔</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Surat Ulang Tahun -->
+    <div id="letterModal" class="letter-modal hidden" aria-hidden="true">
+        <div class="letter-backdrop" id="letterBackdrop"></div>
+        <div class="letter-container">
+            <!-- Amplop Tertutup (Tahap 1: Ketuk untuk buka) -->
+            <div id="letterEnvelope" class="letter-envelope" role="button" tabindex="0" title="Klik untuk membuka surat">
+                <div class="envelope-stamp">💌</div>
+                <div class="envelope-title">Surat Spesial Untukmu</div>
+                <div class="envelope-hint">
+                    <span class="envelope-tap-ring"></span>
+                    <span>Ketuk untuk membaca</span>
+                </div>
+            </div>
+
+            <!-- Isi Surat Lengkap (Tahap 2: Terbuka) -->
+            <div id="letterCard" class="letter-card hidden">
+                <button id="closeLetterBtn" class="close-letter-btn" aria-label="Tutup Surat" title="Tutup">✕</button>
+                <div class="letter-decor-top">💖 ✨ 💖</div>
+                <div class="letter-header">
+                    <h2 class="letter-dear">Dear <span class="letter-name">Sofi</span>,</h2>
+                </div>
+                <div class="letter-body">
+                    <p>Selamat ulang tahun! 🎉</p>
+                    <p>Di hari yang istimewa ini, semoga setiap langkahmu selalu dipenuhi oleh kebahagiaan, kesehatan, kedamaian, dan keberuntungan yang tak terhingga.</p>
+                    <p>Terima kasih sudah selalu hadir dan membawa senyuman serta kehangatan bagi orang-orang di sekitarmu. Semoga semua impian, doa, dan harapan yang kamu semogakan segera terwujud satu per satu.</p>
+                    <p>Tetaplah bersinar dan menjadi dirimu yang luar biasa. Hari ini adalah harimu, nikmatilah setiap detiknya dengan penuh sukacita! 🎂✨</p>
+                </div>
+                <div class="letter-footer">
+                    <p class="letter-closing">Dengan tulus & penuh cinta,</p>
+                    <p class="letter-signature">❤️</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons (Muncul jika modal ditutup) -->
+    <div class="floating-controls">
+        <button id="reopenGalleryBtn" class="floating-btn hidden" aria-label="Buka Galeri Foto" title="Lihat Galeri Kenangan">
+            <span class="floating-btn-icon">📸</span>
+            <span class="floating-btn-text">Galeri</span>
+        </button>
+        <button id="reopenLetterBtn" class="floating-btn hidden" aria-label="Buka Surat Ulang Tahun" title="Buka Surat">
+            <span class="floating-btn-icon">💌</span>
+            <span class="floating-btn-text">Surat</span>
+        </button>
+    </div>
+
+    <!-- Tombol Suara Glassmorphism -->
+    <button id="soundBtn" class="sound-btn" aria-label="Toggle Sound" title="Nyalakan / Matikan Suara">
+        <span id="soundIcon">🔊</span>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
