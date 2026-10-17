@@ -1,0 +1,7 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/pink_matrix_rain.html"
+  to = "/"
+  status = 301
