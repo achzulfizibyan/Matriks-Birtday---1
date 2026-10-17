@@ -1216,6 +1216,47 @@ const goToLetterBtn = document.getElementById("goToLetterBtn");
 const reopenBookBtn = document.getElementById("reopenBookBtn");
 const reopenGalleryBtn = document.getElementById("reopenGalleryBtn");
 
+// Elemen DOM Lightbox Zoom Foto
+const photoLightboxModal = document.getElementById("photoLightboxModal");
+const photoLightboxBackdrop = document.getElementById("photoLightboxBackdrop");
+const closePhotoLightboxBtn = document.getElementById("closePhotoLightboxBtn");
+const photoLightboxImg = document.getElementById("photoLightboxImg");
+const photoLightboxTitle = document.getElementById("photoLightboxTitle");
+const photoLightboxDate = document.getElementById("photoLightboxDate");
+const photoLightboxQuote = document.getElementById("photoLightboxQuote");
+
+// Fungsi Membuka Zoom Preview Foto
+function openPhotoLightbox(item) {
+  if (!photoLightboxModal || !item) return;
+  if (photoLightboxImg) {
+    photoLightboxImg.src = item.src || "assets/memory1.jpeg";
+    photoLightboxImg.alt = item.caption || "Foto Kenangan";
+  }
+  if (photoLightboxTitle) photoLightboxTitle.textContent = item.caption || "Kenangan Indah";
+  if (photoLightboxDate) photoLightboxDate.textContent = item.date || "";
+  if (photoLightboxQuote) {
+    photoLightboxQuote.textContent = item.quote ? `"${item.quote}"` : "";
+  }
+
+  photoLightboxModal.classList.remove("hidden");
+  photoLightboxModal.setAttribute("aria-hidden", "false");
+  playSynthesizedSound("chime");
+}
+
+// Fungsi Menutup Zoom Preview Foto
+function closePhotoLightbox() {
+  if (!photoLightboxModal) return;
+  photoLightboxModal.classList.add("hidden");
+  photoLightboxModal.setAttribute("aria-hidden", "true");
+}
+
+if (closePhotoLightboxBtn) {
+  closePhotoLightboxBtn.addEventListener("click", closePhotoLightbox);
+}
+if (photoLightboxBackdrop) {
+  photoLightboxBackdrop.addEventListener("click", closePhotoLightbox);
+}
+
 let bookLeaves = [];
 let currentBookLeafIndex = 0; // 0 = Cover tertutup
 let totalBookLeaves = 0;
@@ -1266,12 +1307,14 @@ function buildBookLeaves() {
   memoriesData.forEach((item, idx) => {
     leavesData.push({
       isMemory: true,
+      memoryIndex: idx,
       frontHTML: `
         <div class="page-memory">
           <div class="page-photo-frame">
             <div class="photo-tape"></div>
-            <div class="page-photo-box">
+            <div class="page-photo-box" role="button" tabindex="0" title="Ketuk untuk perbesar foto">
               <img class="page-photo-img" src="${item.src}" alt="${item.caption}" loading="eager">
+              <button class="photo-zoom-btn" type="button" title="Perbesar Foto">🔍 Perbesar</button>
             </div>
             <div class="page-caption-box">
               <div class="page-caption-title">${item.caption}</div>
@@ -1284,7 +1327,7 @@ function buildBookLeaves() {
       backHTML: `
         <div class="page-scrapbook-back">
           <div class="scrapbook-quote-icon">✨</div>
-          <p class="scrapbook-quote">
+          <p class="scrapbook-quote" title="Ketuk untuk membaca penuh">
             "${item.quote || "Kenangan terbaik bersamamu yang selalu tersimpan di sudut hati paling dalam."}"
           </p>
           <div class="scrapbook-hearts">💕 🌸 💕</div>
@@ -1312,6 +1355,33 @@ function buildBookLeaves() {
     const back = document.createElement("div");
     back.className = "leaf-back";
     back.innerHTML = data.backHTML;
+
+    // Klik pada area foto untuk memperbesar foto & kutipan (Lightbox) tanpa membalik halaman
+    const photoBox = front.querySelector(".page-photo-box");
+    if (photoBox && data.isMemory) {
+      photoBox.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openPhotoLightbox(memoriesData[data.memoryIndex]);
+      });
+    }
+
+    // Klik pada teks quote untuk memperbesar teks di modal jika ingin membaca lebih nyaman
+    const quoteEl = back.querySelector(".scrapbook-quote");
+    if (quoteEl) {
+      quoteEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (data.isMemory) {
+          openPhotoLightbox(memoriesData[data.memoryIndex]);
+        } else {
+          openPhotoLightbox({
+            src: "assets/memory1.jpeg",
+            caption: "Buku Kenangan Indah",
+            date: "Spesial Untukmu",
+            quote: "Setiap lembaran menyimpan tawa, kehangatan, dan cerita manis yang tak pernah pudar...",
+          });
+        }
+      });
+    }
 
     leaf.appendChild(front);
     leaf.appendChild(back);
@@ -1382,6 +1452,15 @@ function flipBookTo(targetIndex) {
 
   currentBookLeafIndex = targetIndex;
   playSynthesizedSound("flip");
+
+  // Jika buku sudah dibuka (bukan halaman cover depan), geser jilid tengah ke posisi tengah layar
+  if (bookElement) {
+    if (currentBookLeafIndex > 0) {
+      bookElement.classList.add("book-opened");
+    } else {
+      bookElement.classList.remove("book-opened");
+    }
+  }
 
   bookLeaves.forEach((leaf, idx) => {
     if (idx < currentBookLeafIndex) {
