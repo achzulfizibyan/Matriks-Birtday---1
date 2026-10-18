@@ -837,6 +837,7 @@ html, body {
     line-height: 1.55;
     color: #552747;
     margin-bottom: 12px;
+    white-space: pre-line;
 }
 
 .scrapbook-hearts {
@@ -1111,6 +1112,7 @@ html, body {
     padding: 9px 13px;
     border-radius: 10px;
     border-left: 3px solid #FF69B4;
+    white-space: pre-line;
 }
 
 /* ========================================================

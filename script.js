@@ -18,7 +18,7 @@ let matrixMode = "letters"; // 'letters' atau 'hearts'
 // Warna yang digunakan untuk matrix
 const pink1 = "#FF69B4"; // Hot Pink
 const pink2 = "#FF1493"; // Deep Pink
-const lightPink = "#FFE6F5"; // Kilau putih-pink terang di ujung
+const lightPink = "#f5a7d6ff"; // Kilau putih-pink terang di ujung
 
 let columns, maxRows;
 let drops = [];
@@ -1096,52 +1096,59 @@ if (startOverlay) {
   });
 }
 
-// === SISTEM BUKU KENANGAN 3D & FORMASI FOTO HATI MELAYANG ===
-// Daftar foto kenangan dan teks keterangannya (mudah diedit & ditambah dinamis)
+// ==============================================================================
+// 📸 [BLOK PENGATURAN CAPTION & FOTO KENANGAN]
+// Edit semua judul, kata-kata/quote, dan gambar foto cukup pada blok ini saja:
+// ==============================================================================
+const bookConfig = {
+  coverTitle: "SWEET MEMORIES",
+  coverSubtitle: "Kumpulan Kenangan Indah Bersamamu",
+  closingQuote:
+    "Setiap kenangan bersamamu adalah anugerah terindah yang selalu kusyukuri... ✨💖",
+};
+
 const memoriesData = [
   {
     src: "assets/memory1.jpeg",
-    caption: "Senyum manis yang selalu menghangatkan hati 🌅✨",
+    caption: "My Favorite Part About This Year ✨",
     date: "Momen 1 dari 6",
-    quote:
-      "Setiap tatap matamu selalu membawa ketenangan dan bahagia yang tak tergantikan...",
+    quote: "i think my favorite part about this year was meeting you",
   },
   {
     src: "assets/memory2.jpeg",
-    caption: "Momen manis yang selalu kurindukan 🍰🌸",
+    caption: "You & Me in the End 🌸",
     date: "Momen 2 dari 6",
-    quote:
-      "Tertawa lepas bersamamu adalah bagian terindah di setiap hariku...",
+    quote: "i'm still hoping it's you and me in the end",
   },
   {
     src: "assets/memory3.jpeg",
-    caption: "Langkah dan cerita kita bersama 🌿💫",
+    caption: "Just Stay & Be My Last 💫",
     date: "Momen 3 dari 6",
-    quote:
-      "Menemani setiap langkahmu adalah anugerah terindah yang selalu kusyukuri...",
+    quote: "just stay and be my last!",
   },
   {
     src: "assets/memory4.jpeg",
-    caption: "Malam bertabur bintang & senyumanmu 🎆✨",
+    caption: "Proud of You 🌌✨",
     date: "Momen 4 dari 6",
     quote:
-      "Di bawah langit malam, doa terbaikku selalu terucap untuk kebahagiaanmu...",
+      "And I hope you're proud of yourself for surviving the wars you fought in silence.",
   },
   {
     src: "assets/memory5.jpeg",
-    caption: "Kebersamaan yang penuh warna & tawa 💖🌷",
+    caption: "Your Smile Makes Me Smile 💖",
     date: "Momen 5 dari 6",
     quote:
-      "Sederhana saat bersamamu selalu terasa begitu istimewa dan bermakna...",
+      "The first thing I liked about you was your smile.\nDo you know why?\nBecause when you smiled, you made me smile too.",
   },
   {
     src: "assets/memory6.jpeg",
-    caption: "Doa tulus untuk usiamu yang baru 🎂🎉",
+    caption: "Tetap Sehat & Bahagia 🎂✨",
     date: "Momen 6 dari 6",
     quote:
-      "Semoga di usia ke-24 ini, setiap impian dan harapanmu terwujud satu per satu...",
+      "Mari tetap sehat dan bahagia untuk waktu yang lama, dibawah langit manapun.",
   },
 ];
+// ==============================================================================
 
 // Audio FX Sintetis (Web Audio API - ringan, mandiri, dan responsif)
 function playSynthesizedSound(type = "flip") {
@@ -1232,7 +1239,8 @@ function openPhotoLightbox(item) {
     photoLightboxImg.src = item.src || "assets/memory1.jpeg";
     photoLightboxImg.alt = item.caption || "Foto Kenangan";
   }
-  if (photoLightboxTitle) photoLightboxTitle.textContent = item.caption || "Kenangan Indah";
+  if (photoLightboxTitle)
+    photoLightboxTitle.textContent = item.caption || "Kenangan Indah";
   if (photoLightboxDate) photoLightboxDate.textContent = item.date || "";
   if (photoLightboxQuote) {
     photoLightboxQuote.textContent = item.quote ? `"${item.quote}"` : "";
@@ -1277,34 +1285,51 @@ function buildBookLeaves() {
 
   const leavesData = [];
 
-  // 1. Cover Depan Buku
+  // Helper untuk merender halaman kutipan (halaman kiri saat buku terbuka)
+  const renderQuotePageHTML = (quoteText, icon = "✨") => `
+    <div class="page-scrapbook-back">
+      <div class="scrapbook-quote-icon">${icon}</div>
+      <p class="scrapbook-quote" title="Ketuk untuk membaca penuh">
+        "${quoteText || ""}"
+      </p>
+      <div class="scrapbook-hearts">💕 🌸 💕</div>
+    </div>
+  `;
+
+  // 1. Cover Depan Buku (Leaf 0)
+  // - Sisi depan: Cover judul buku
+  // - Sisi belakang: Menjadi halaman kiri saat Foto 1 dibuka, menampilkan quote Foto 1
   leavesData.push({
     isCover: true,
     frontHTML: `
       <div class="cover-front">
         <div class="cover-gold-border"></div>
         <div class="cover-icon">📖</div>
-        <div class="cover-title">SWEET MEMORIES</div>
-        <div class="cover-subtitle">Kumpulan Kenangan Indah Bersamamu</div>
+        <div class="cover-title">${bookConfig.coverTitle || "SWEET MEMORIES"}</div>
+        <div class="cover-subtitle">${bookConfig.coverSubtitle || "Kumpulan Kenangan Indah Bersamamu"}</div>
         <div class="cover-open-tag">
           <span>Ketuk untuk Buka</span>
           <span>➔</span>
         </div>
       </div>
     `,
-    backHTML: `
-      <div class="page-scrapbook-back">
-        <div class="scrapbook-quote-icon">🌸</div>
-        <p class="scrapbook-quote">
-          "Setiap lembaran menyimpan tawa, kehangatan, dan cerita manis yang tak pernah pudar..."
-        </p>
-        <div class="scrapbook-hearts">💖 ✨ 💖</div>
-      </div>
-    `,
+    backHTML: renderQuotePageHTML(
+      memoriesData[0] ? memoriesData[0].quote : "",
+      "🌸"
+    ),
+    quoteIndex: 0,
   });
 
   // 2. Lembaran Foto Kenangan (Dinamis dari memoriesData)
   memoriesData.forEach((item, idx) => {
+    // Pada sisi belakang lembaran ini, tampilkan quote untuk foto selanjutnya (idx + 1)
+    // Jika ini foto terakhir, tampilkan kata penutup buku
+    const nextItem = memoriesData[idx + 1];
+    const backQuoteText = nextItem
+      ? nextItem.quote
+      : (bookConfig.closingQuote || "Setiap kenangan bersamamu adalah anugerah terindah... ✨💖");
+    const backIcon = nextItem ? "✨" : "💖";
+
     leavesData.push({
       isMemory: true,
       memoryIndex: idx,
@@ -1324,15 +1349,8 @@ function buildBookLeaves() {
           </div>
         </div>
       `,
-      backHTML: `
-        <div class="page-scrapbook-back">
-          <div class="scrapbook-quote-icon">✨</div>
-          <p class="scrapbook-quote" title="Ketuk untuk membaca penuh">
-            "${item.quote || "Kenangan terbaik bersamamu yang selalu tersimpan di sudut hati paling dalam."}"
-          </p>
-          <div class="scrapbook-hearts">💕 🌸 💕</div>
-        </div>
-      `,
+      backHTML: renderQuotePageHTML(backQuoteText, backIcon),
+      quoteIndex: nextItem ? idx + 1 : -1,
     });
   });
 
@@ -1370,14 +1388,14 @@ function buildBookLeaves() {
     if (quoteEl) {
       quoteEl.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (data.isMemory) {
-          openPhotoLightbox(memoriesData[data.memoryIndex]);
+        if (data.quoteIndex !== undefined && data.quoteIndex >= 0 && memoriesData[data.quoteIndex]) {
+          openPhotoLightbox(memoriesData[data.quoteIndex]);
         } else {
           openPhotoLightbox({
             src: "assets/memory1.jpeg",
             caption: "Buku Kenangan Indah",
             date: "Spesial Untukmu",
-            quote: "Setiap lembaran menyimpan tawa, kehangatan, dan cerita manis yang tak pernah pudar...",
+            quote: bookConfig.closingQuote,
           });
         }
       });
@@ -1494,8 +1512,14 @@ function computeHeartFormationLayout(count, screenW, screenH) {
   const cardH = isMobile ? 66 : isTablet ? 96 : 124;
 
   // Batas ruang layar yang aman
-  const availW = Math.min(screenW * 0.92, isMobile ? 360 : isTablet ? 650 : 860);
-  const availH = Math.min(screenH * 0.74, isMobile ? 480 : isTablet ? 560 : 680);
+  const availW = Math.min(
+    screenW * 0.92,
+    isMobile ? 360 : isTablet ? 650 : 860,
+  );
+  const availH = Math.min(
+    screenH * 0.74,
+    isMobile ? 480 : isTablet ? 560 : 680,
+  );
 
   const scaleX = (availW - cardW) / 32;
   const scaleY = (availH - cardH) / 30;
@@ -1719,7 +1743,10 @@ function closeMemoryGallery() {
   if (letterHasBeenOpened && reopenGalleryBtn) {
     reopenGalleryBtn.classList.remove("hidden");
   }
-  if (letterHasBeenOpened && (!letterModal || letterModal.classList.contains("hidden"))) {
+  if (
+    letterHasBeenOpened &&
+    (!letterModal || letterModal.classList.contains("hidden"))
+  ) {
     if (typeof showLyricsWidget === "function") {
       showLyricsWidget();
     }
@@ -1886,45 +1913,193 @@ if (reopenLetterBtn) {
 // ==========================================================================
 
 const lyricsData = [
-  { time: 0.8, text: "Wish you could always tell me", trans: "Kuharap kamu selalu memberitahuku" },
-  { time: 4.8, text: "How to make you happy", trans: "Bagaimana cara membuatmu bahagia" },
+  {
+    time: 0.8,
+    text: "Wish you could always tell me",
+    trans: "Kuharap kamu selalu memberitahuku",
+  },
+  {
+    time: 4.8,
+    text: "How to make you happy",
+    trans: "Bagaimana cara membuatmu bahagia",
+  },
   { time: 9.0, text: "I just got no clue", trans: "Aku sungguh tak tahu" },
-  { time: 12.5, text: "Don't want you feel blue", trans: "Tak ingin membuatmu bersedih" },
+  {
+    time: 12.5,
+    text: "Don't want you feel blue",
+    trans: "Tak ingin membuatmu bersedih",
+  },
   { time: 15.5, text: "It's true...", trans: "Sungguh..." },
-  { time: 18.0, text: "✨ (Melodi Lembut) ✨", trans: "Hanya ingin melihatmu tersenyum..." },
-  { time: 24.5, text: "I'm tryin' to be a better woman", trans: "Aku berusaha menjadi wanita yang lebih baik untukmu" },
-  { time: 29.5, text: "Doin' the best that I think I can", trans: "Melakukan yang terbaik sebisa yang kumampu" },
-  { time: 34.0, text: "Don't know where I'm goin'", trans: "Tak tahu ke mana langkahku berujung" },
-  { time: 37.0, text: "But in case you're wonderin'", trans: "Tapi jika kamu bertanya-tanya" },
-  { time: 40.0, text: "I'm on my way", trans: "Aku sedang dalam perjalanan menuju ke sana" },
-  { time: 44.5, text: "I know I'm not perfect", trans: "Aku tahu aku tidak sempurna" },
-  { time: 48.0, text: "But you still chose me", trans: "Tapi kamu tetap memilih diriku" },
-  { time: 51.0, text: "Boy, this is not an act", trans: "Kasih, ini sungguh bukan sandiwara" },
-  { time: 54.5, text: "Oh, I want to be the last for you, for you", trans: "Oh, aku ingin menjadi pelabuhan terakhir untukmu" },
-  { time: 60.5, text: "And often I keep thinking", trans: "Dan sering kali aku terus berpikir" },
-  { time: 64.0, text: "Am I worth waiting for?", trans: "Apakah aku pantas untuk kamu tunggu?" },
-  { time: 67.2, text: "But you keep motivating me", trans: "Tetapi kamu selalu menyemangatiku" },
-  { time: 71.5, text: "To be the best of me, of me, of me", trans: "Untuk menjadi versi terbaik dari diriku" },
-  { time: 82.0, text: "✨ (Melodi Solo Gitar yang Manis) ✨", trans: "Mengenang setiap senyum dan kehangatanmu..." },
-  { time: 110.0, text: "Tried to be a better woman", trans: "Berusaha menjadi wanita yang lebih baik" },
-  { time: 115.0, text: "Doin' the best of the things I can", trans: "Melakukan yang terbaik dari segala yang bisa kulakukan" },
-  { time: 119.5, text: "Don't know where I'm going", trans: "Tak tahu ke mana arah tujuanku" },
-  { time: 122.5, text: "But in case you're wonderin'", trans: "Namun jika kamu penasaran" },
-  { time: 125.5, text: "I'm on my way", trans: "Aku sedang melangkah menuju hatimu" },
-  { time: 130.0, text: "I know I'm not perfect", trans: "Aku tahu aku tidak sempurna" },
-  { time: 133.5, text: "But you still chose me", trans: "Tapi kamu tetap setia memilihku" },
-  { time: 136.5, text: "Boy, this is not an act", trans: "Kasih, ini sungguh tulus dari hatiku" },
-  { time: 140.0, text: "Oh, I want to be the last for you, for you", trans: "Oh, aku ingin menjadi yang terakhir untukmu" },
-  { time: 146.0, text: "And often I keep thinking", trans: "Dan sering kali aku merenung" },
-  { time: 149.5, text: "Am I worth waiting for?", trans: "Apakah aku layak untuk kamu nantikan?" },
-  { time: 152.5, text: "But you keep motivating me", trans: "Namun kamu selalu memotivasiku" },
-  { time: 156.8, text: "To be the best of me, of me, of me", trans: "Untuk terus menjadi yang terbaik untukmu" },
-  { time: 168.0, text: "✨ (Solo Harmoni Akustik yang Hangat) ✨", trans: "Bersyukur atas setiap detik yang kita lalui bersama..." },
-  { time: 193.0, text: "I know it ain't easy", trans: "Aku tahu ini tidak mudah" },
-  { time: 199.0, text: "I know it ain't easy", trans: "Aku tahu semua ini tidak mudah bagimu" },
-  { time: 206.5, text: "But thank you...", trans: "Tapi terima kasih banyak..." },
-  { time: 210.0, text: "Thank you for lovin' me ❤️", trans: "Terima kasih telah mencintaiku setulus hatimu" },
-  { time: 218.0, text: "✨ (Melodi Penutup yang Indah) ✨", trans: "Selamat ulang tahun, sayangku Tegar Utomo 🎂" }
+  {
+    time: 18.0,
+    text: "✨ (Melodi Lembut) ✨",
+    trans: "Hanya ingin melihatmu tersenyum...",
+  },
+  {
+    time: 24.5,
+    text: "I'm tryin' to be a better woman",
+    trans: "Aku berusaha menjadi wanita yang lebih baik untukmu",
+  },
+  {
+    time: 29.5,
+    text: "Doin' the best that I think I can",
+    trans: "Melakukan yang terbaik sebisa yang kumampu",
+  },
+  {
+    time: 34.0,
+    text: "Don't know where I'm goin'",
+    trans: "Tak tahu ke mana langkahku berujung",
+  },
+  {
+    time: 37.0,
+    text: "But in case you're wonderin'",
+    trans: "Tapi jika kamu bertanya-tanya",
+  },
+  {
+    time: 40.0,
+    text: "I'm on my way",
+    trans: "Aku sedang dalam perjalanan menuju ke sana",
+  },
+  {
+    time: 44.5,
+    text: "I know I'm not perfect",
+    trans: "Aku tahu aku tidak sempurna",
+  },
+  {
+    time: 48.0,
+    text: "But you still chose me",
+    trans: "Tapi kamu tetap memilih diriku",
+  },
+  {
+    time: 51.0,
+    text: "Boy, this is not an act",
+    trans: "Kasih, ini sungguh bukan sandiwara",
+  },
+  {
+    time: 54.5,
+    text: "Oh, I want to be the last for you, for you",
+    trans: "Oh, aku ingin menjadi pelabuhan terakhir untukmu",
+  },
+  {
+    time: 60.5,
+    text: "And often I keep thinking",
+    trans: "Dan sering kali aku terus berpikir",
+  },
+  {
+    time: 64.0,
+    text: "Am I worth waiting for?",
+    trans: "Apakah aku pantas untuk kamu tunggu?",
+  },
+  {
+    time: 67.2,
+    text: "But you keep motivating me",
+    trans: "Tetapi kamu selalu menyemangatiku",
+  },
+  {
+    time: 71.5,
+    text: "To be the best of me, of me, of me",
+    trans: "Untuk menjadi versi terbaik dari diriku",
+  },
+  {
+    time: 82.0,
+    text: "✨ (Melodi Solo Gitar yang Manis) ✨",
+    trans: "Mengenang setiap senyum dan kehangatanmu...",
+  },
+  {
+    time: 110.0,
+    text: "Tried to be a better woman",
+    trans: "Berusaha menjadi wanita yang lebih baik",
+  },
+  {
+    time: 115.0,
+    text: "Doin' the best of the things I can",
+    trans: "Melakukan yang terbaik dari segala yang bisa kulakukan",
+  },
+  {
+    time: 119.5,
+    text: "Don't know where I'm going",
+    trans: "Tak tahu ke mana arah tujuanku",
+  },
+  {
+    time: 122.5,
+    text: "But in case you're wonderin'",
+    trans: "Namun jika kamu penasaran",
+  },
+  {
+    time: 125.5,
+    text: "I'm on my way",
+    trans: "Aku sedang melangkah menuju hatimu",
+  },
+  {
+    time: 130.0,
+    text: "I know I'm not perfect",
+    trans: "Aku tahu aku tidak sempurna",
+  },
+  {
+    time: 133.5,
+    text: "But you still chose me",
+    trans: "Tapi kamu tetap setia memilihku",
+  },
+  {
+    time: 136.5,
+    text: "Boy, this is not an act",
+    trans: "Kasih, ini sungguh tulus dari hatiku",
+  },
+  {
+    time: 140.0,
+    text: "Oh, I want to be the last for you, for you",
+    trans: "Oh, aku ingin menjadi yang terakhir untukmu",
+  },
+  {
+    time: 146.0,
+    text: "And often I keep thinking",
+    trans: "Dan sering kali aku merenung",
+  },
+  {
+    time: 149.5,
+    text: "Am I worth waiting for?",
+    trans: "Apakah aku layak untuk kamu nantikan?",
+  },
+  {
+    time: 152.5,
+    text: "But you keep motivating me",
+    trans: "Namun kamu selalu memotivasiku",
+  },
+  {
+    time: 156.8,
+    text: "To be the best of me, of me, of me",
+    trans: "Untuk terus menjadi yang terbaik untukmu",
+  },
+  {
+    time: 168.0,
+    text: "✨ (Solo Harmoni Akustik yang Hangat) ✨",
+    trans: "Bersyukur atas setiap detik yang kita lalui bersama...",
+  },
+  {
+    time: 193.0,
+    text: "I know it ain't easy",
+    trans: "Aku tahu ini tidak mudah",
+  },
+  {
+    time: 199.0,
+    text: "I know it ain't easy",
+    trans: "Aku tahu semua ini tidak mudah bagimu",
+  },
+  {
+    time: 206.5,
+    text: "But thank you...",
+    trans: "Tapi terima kasih banyak...",
+  },
+  {
+    time: 210.0,
+    text: "Thank you for lovin' me ❤️",
+    trans: "Terima kasih telah mencintaiku setulus hatimu",
+  },
+  {
+    time: 218.0,
+    text: "✨ (Melodi Penutup yang Indah) ✨",
+    trans: "Selamat ulang tahun, sayangku Tegar Utomo 🎂",
+  },
 ];
 
 const lyricsWidget = document.getElementById("lyricsWidget");
@@ -1999,7 +2174,8 @@ function updateLyricsByTime(currentTime, forceScroll = false) {
     const dur = bgMusicAudio.duration;
     const pct = Math.min(100, Math.max(0, (currentTime / dur) * 100));
     if (lyricsProgressFill) lyricsProgressFill.style.width = `${pct}%`;
-    if (lyricsCurrentTimeEl) lyricsCurrentTimeEl.textContent = formatTime(currentTime);
+    if (lyricsCurrentTimeEl)
+      lyricsCurrentTimeEl.textContent = formatTime(currentTime);
     if (lyricsDurationEl) lyricsDurationEl.textContent = formatTime(dur);
   }
 
@@ -2016,7 +2192,7 @@ function updateLyricsByTime(currentTime, forceScroll = false) {
           const containerHeight = lyricsScrollArea.clientHeight;
           lyricsScrollArea.scrollTo({
             top: itemTop - containerHeight / 2 + itemHeight / 2,
-            behavior: "smooth"
+            behavior: "smooth",
           });
         }
       } else {
